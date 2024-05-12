@@ -10,7 +10,6 @@ import { UserButton, useUser } from "@clerk/nextjs";
 function Header() {
   const path = usePathname();
   const { user, isSignedIn } = useUser();
-  console.log(user);
   useEffect(() => {
     console.log(path);
   }, []);
