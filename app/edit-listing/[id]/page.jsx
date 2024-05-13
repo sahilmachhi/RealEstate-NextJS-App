@@ -17,12 +17,24 @@ import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import FileUpload from "../_components/FileUpload";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 function Page({ params }) {
   let postId = params.id;
   const [images, setImages] = useState([]);
   const router = useRouter();
   let { user } = useUser();
+
   const formSubmit = async (formValue) => {
     const { data, error } = await supabase
       .from("listing")
@@ -51,9 +63,11 @@ function Page({ params }) {
       }
     }
   };
+
   useEffect(() => {
-    verifyUserRecord();
+    // verifyUserRecord();
   }, []);
+
   const verifyUserRecord = async () => {
     const { data, error } = await supabase
       .from("listing")
@@ -64,6 +78,17 @@ function Page({ params }) {
     if (data.length < 1) {
       router.replace("/");
     }
+  };
+
+  const publishbtn = async () => {
+    console.log("function is called");
+    const { error, data } = await supabase
+      .from("listing")
+      .update({ active: true })
+      .eq("id", postId)
+      .select();
+    if (error) console.log(error);
+    else console.log(data);
   };
   return (
     <>
@@ -80,6 +105,7 @@ function Page({ params }) {
           }}
           onSubmit={(values) => {
             formSubmit(values);
+            publishbtn();
           }}
         >
           {({ values, handleChange, handleSubmit }) => (

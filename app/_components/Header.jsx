@@ -28,7 +28,7 @@ function Header() {
                 path === "/" ? `font-bold` : ``
               }`}
             >
-              for sale
+              for sell
             </li>
           </Link>
           <Link href={"/rent"}>
