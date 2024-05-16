@@ -10,7 +10,16 @@ async function Listings() {
 
   return (
     <>
-      <h1>Listing</h1>
+      <div className="flex gap-4 md:flex-col flex-row">
+        {data.map((lis) => (
+          <div
+            key={lis.id}
+            className="shadow-slate-950 shadow-md flex w-12 h-12"
+          >
+            <h1>{lis.id}</h1>
+          </div>
+        ))}
+      </div>
     </>
   );
 }
