@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,15 +10,13 @@ import { UserButton, useUser } from "@clerk/nextjs";
 function Header() {
   const path = usePathname();
   const { user, isSignedIn } = useUser();
-  useEffect(() => {
-    console.log(path);
-  }, []);
+
   return (
     <>
       <div className="w-full flex justify-between items-center fixed top-0 bg-white shadow-sm px-20 py-7 z-50">
         <div>
-          <Link href={"/"}>
-            <Image src={"/logo.svg"} width={50} height={50} alt="logo" />
+          <Link href={"/"} className="w-20 relative h-20 block">
+            <Image src={"/logo.svg"} fill={true} alt="logo" />
           </Link>
         </div>
         <ul className="hidden md:flex gap-14">
