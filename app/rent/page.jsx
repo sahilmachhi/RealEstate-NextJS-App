@@ -1,9 +1,9 @@
 import React from "react";
-
+import ListingMapView from "../_components/ListingMapView";
 function Page() {
   return (
-    <div className="container">
-      <h1>rent</h1>
+    <div className=" relative block">
+      <ListingMapView type="rent" />
     </div>
   );
 }

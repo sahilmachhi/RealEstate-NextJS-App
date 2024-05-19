@@ -5,7 +5,15 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { SignOutButton, UserButton, useUser } from "@clerk/nextjs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function Header() {
   const path = usePathname();
@@ -13,7 +21,7 @@ function Header() {
 
   return (
     <>
-      <div className="w-full flex justify-between items-center fixed top-0 bg-white shadow-sm px-20 py-7 z-50">
+      <div className="w-full flex justify-between items-center fixed top-0 bg-white shadow-sm px-20 py-2 z-50">
         <div>
           <Link href={"/"} className="w-20 relative h-20 block">
             <Image src={"/logo.svg"} fill={true} alt="logo" />
@@ -53,7 +61,28 @@ function Header() {
             <Button>Post Your AD</Button>
           </Link>
           {isSignedIn ? (
-            <UserButton />
+            <DropdownMenu>
+              <DropdownMenuTrigger className="rounded-full" asChild>
+                <Image
+                  src={user?.imageUrl}
+                  width={45}
+                  height={45}
+                  alt="userProfile"
+                  className="rounded-full"
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link href={"/user"}>Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>My Listing</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <SignOutButton>Log Out</SignOutButton>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link href={"/sign-in"}>
               <Button variant="outlined">Login</Button>

@@ -5,7 +5,7 @@ function Provider({ children }) {
     <>
       <main className="min-h-screen p-[20px] relative">
         <Header />
-        <div className="flex items-center justify-center top-20 relative">
+        <div className="flex items-center justify-center top-24 w-full relative">
           {children}
         </div>
       </main>
