@@ -23,7 +23,7 @@ const Page = ({ params }) => {
   };
   return (
     <>
-      <div className="w-full">
+      <div className="w-full pb-12">
         {home.map((data) => (
           <div key={data.id} className="px-3 md:px-32 lg:px-56">
             <ImageSlider data={data.listingImages} />

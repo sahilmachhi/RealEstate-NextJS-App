@@ -43,7 +43,7 @@ function ListingFilterForm({ setListing, type }) {
           <Button>Search</Button>
         </div>
 
-        <div className="flex flex-row justify-between items-center gap-5">
+        <div className="grid justify-start lg:grid-cols-4 grid-cols-2  items-center gap-5">
           <FilterSelection
             setBathroomFilter={setBathroomFilter}
             setParkingFilter={setParkingFilter}

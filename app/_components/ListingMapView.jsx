@@ -21,12 +21,9 @@ const ListingMapView = ({ type }) => {
   };
   return (
     <>
-      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 w-full">
-        <div className="flex flex-col gap-4">
-          <ListingFilterForm setListing={setListing} type={type} />
-          <Listings listing={listing} />
-        </div>
-        <div>for map</div>
+      <div className="flex flex-col gap-4">
+        <ListingFilterForm setListing={setListing} type={type} />
+        <Listings listing={listing} />
       </div>
     </>
   );
