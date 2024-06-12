@@ -1,11 +1,11 @@
-"use client";
-import ListingMapView from "./_components/ListingMapView";
-export default function Home() {
+import React from "react";
+
+const page = () => {
   return (
-    <>
-      <div className="relative block mx-auto md:px-8 px-2 container">
-        <ListingMapView type="sell" />
-      </div>
-    </>
+    <div>
+      <h1>hello world</h1>
+    </div>
   );
-}
+};
+
+export default page;

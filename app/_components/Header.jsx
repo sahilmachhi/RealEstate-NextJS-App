@@ -34,7 +34,7 @@ function Header() {
                 path === "/" ? `font-bold` : ``
               }`}
             >
-              for sell
+              Home
             </li>
           </Link>
           <Link href={"/rent"}>
@@ -46,13 +46,13 @@ function Header() {
               for rent
             </li>
           </Link>
-          <Link href={"/"}>
+          <Link href={"/for-sell"}>
             <li
               className={`hover:font-bold text-sm  cursor-pointer ${
                 path === "/agent" ? `font-bold` : ``
               }`}
             >
-              agent finder
+              for sell
             </li>
           </Link>
         </ul>
