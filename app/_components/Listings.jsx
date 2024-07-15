@@ -2,15 +2,23 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { Bath, BedDouble, MapPin, Ruler } from "lucide-react";
+import { Bath, BedDouble, Heading1, MapPin, Ruler } from "lucide-react";
 import Link from "next/link";
 
 function Listings({ listing }) {
   return (
     <>
       <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
-        {listing.length > 0
-          ? listing.map((lis) => {
+        {listing !== null ? (
+          listing.length < 1 ? (
+            [1, 2, 3, 4, 5, 6, 7].map((items) => (
+              <div
+                key={items}
+                className="h-[240px] w-[322px] bg-slate-400 animate-pulse"
+              ></div>
+            ))
+          ) : (
+            listing.map((lis) => {
               return (
                 <>
                   <Link
@@ -57,12 +65,10 @@ function Listings({ listing }) {
                 </>
               );
             })
-          : [1, 2, 3, 4, 5, 6, 7].map((items) => (
-              <div
-                key={items}
-                className="h-[240px] w-[322px] bg-slate-400 animate-pulse"
-              ></div>
-            ))}
+          )
+        ) : (
+          <h1>error listing not found</h1>
+        )}
       </div>
     </>
   );
