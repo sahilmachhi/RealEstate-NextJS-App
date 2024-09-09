@@ -5,18 +5,13 @@ import Image from "next/image";
 import { Bath, BedDouble, Heading1, MapPin, Ruler } from "lucide-react";
 import Link from "next/link";
 
-function Listings({ listing }) {
+function Listings({ listing, isLoading }) {
   return (
     <>
       <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
-        {listing !== null ? (
+        {!isLoading ? (
           listing.length < 1 ? (
-            [1, 2, 3, 4, 5, 6, 7].map((items) => (
-              <div
-                key={items}
-                className="h-[240px] w-[322px] bg-slate-400 animate-pulse"
-              ></div>
-            ))
+            <h1>error listing not found</h1>
           ) : (
             listing.map((lis) => {
               return (
@@ -67,7 +62,12 @@ function Listings({ listing }) {
             })
           )
         ) : (
-          <h1>error listing not found</h1>
+          [1, 2, 3, 4, 5, 6, 7].map((items) => (
+            <div
+              key={items}
+              className="h-[240px] w-[322px] bg-slate-400 animate-pulse"
+            ></div>
+          ))
         )}
       </div>
     </>
