@@ -13,9 +13,7 @@ function ListingFilterForm({ setListing, type }) {
   const [homeType, setHomeType] = useState("");
 
   const handleSearch = async (e) => {
-    e.preventDefault();
-    console.log(`handle search called`);
-    const { data, error } = await supabase
+    let query = supabase
       .from("listing")
       .select(`*,listingImages(*)`)
       .like("address", `%${search}%`)
@@ -23,8 +21,14 @@ function ListingFilterForm({ setListing, type }) {
       .gte("bathroom", bathroomFilter)
       .gte("parking", parkingFilter)
       .eq("active", true)
-      .eq("type", type)
-      .eq("propertyType", homeType);
+      .eq("type", type);
+    if (homeType) {
+      query = query.eq("propertyType", homeType);
+    }
+    e.preventDefault();
+    console.log(homeType);
+    const { data, error } = await query;
+
     if (error) console.log(error);
     else {
       console.log(data);

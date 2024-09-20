@@ -35,6 +35,17 @@ function Page({ params }) {
   const router = useRouter();
   let { user } = useUser();
 
+  const getPost = async () => {
+    const { data, error } = await supabase
+      .from("listing")
+      .select("*, listingImages(*)")
+      .eq("id", params.id);
+    if (error) {
+      return console.log(error);
+    }
+    console.log(data);
+    // set data to listing object
+  };
   const formSubmit = async (formValue) => {
     const { data, error } = await supabase
       .from("listing")
@@ -66,6 +77,7 @@ function Page({ params }) {
 
   useEffect(() => {
     // verifyUserRecord();
+    getPost();
   }, []);
 
   const verifyUserRecord = async () => {
@@ -81,14 +93,15 @@ function Page({ params }) {
   };
 
   const publishbtn = async () => {
-    console.log("function is called");
     const { error, data } = await supabase
       .from("listing")
       .update({ active: true })
       .eq("id", postId)
       .select();
     if (error) console.log(error);
-    else console.log(data);
+    else {
+      console.log("function called");
+    }
   };
   return (
     <>

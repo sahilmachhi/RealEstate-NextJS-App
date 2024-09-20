@@ -1,7 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -9,8 +9,20 @@ function Page() {
   const [address, setAddress] = useState("");
   const { user } = useUser();
   const route = useRouter();
-  console.log(user.primaryEmailAddress.emailAddress);
-  console.log(address);
+  useEffect(() => {
+    if (!user) {
+      route.push("/sign-in");
+    } else {
+      console.log(user);
+      console.log(user.primaryEmailAddress.emailAddress);
+      console.log(address);
+    }
+  }, [user, route, address]);
+
+  if (!user) {
+    return null;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { error, data } = await supabase

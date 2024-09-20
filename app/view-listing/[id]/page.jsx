@@ -8,7 +8,7 @@ const Page = ({ params }) => {
   const [home, setHome] = useState([]);
   useEffect(() => {
     viewListing();
-  });
+  }, []);
   const viewListing = async () => {
     const { data, error } = await supabase
       .from("listing")
