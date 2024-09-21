@@ -17,23 +17,25 @@ import { supabase } from "@/utils/supabase";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import FileUpload from "../_components/FileUpload";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from "@/components/ui/alert-dialog";
 
 function Page({ params }) {
   let postId = params.id;
   const [images, setImages] = useState([]);
   const router = useRouter();
   let { user } = useUser();
+  const [listing, setlisting] = useState({});
+  console.log(listing);
 
   const getPost = async () => {
     const { data, error } = await supabase
@@ -44,34 +46,52 @@ function Page({ params }) {
       return console.log(error);
     }
     console.log(data);
+    setlisting(data[0]);
     // set data to listing object
   };
   const formSubmit = async (formValue) => {
-    const { data, error } = await supabase
+    const { error: errorUpdateListing } = await supabase
       .from("listing")
       .update(formValue)
       .eq("id", postId)
       .select();
-    if (error) console.log(error);
+
+    if (errorUpdateListing) {
+      console.log(errorUpdateListing);
+      return;
+    }
 
     for (const image of images) {
       const fileName = Date.now().toString();
-      const { data, error } = await supabase.storage
-        .from("listingImages")
-        .upload(`${fileName}`, image, {
+
+      const { data: imageData, error: imageUploadError } =
+        await supabase.storage.from("listingImages").upload(fileName, image, {
           cacheControl: "3600",
           upsert: false,
         });
-      if (error) {
-        console.log(error);
-      } else {
-        const imageUrl = process.env.NEXT_PUBLIC_SUPABASE_IMAGE_URL + fileName;
-        const { error } = await supabase
-          .from("listingImages")
-          .insert([{ url: imageUrl, image_id: postId }])
-          .eq("id", 1);
-        if (error) console.log(error);
+
+      if (imageUploadError) {
+        console.log(imageUploadError);
+        continue;
       }
+
+      const { data } = supabase.storage
+        .from("listingImages")
+        .getPublicUrl(imageData.path);
+
+      const publicUrl = data.publicUrl;
+
+      const { error: imageAssignError } = await supabase
+        .from("listingImages")
+        .insert([
+          { url: publicUrl, image_id: postId, imageName: imageData.path },
+        ])
+        .eq("id", 1);
+      if (imageAssignError) {
+        console.log(imageAssignError);
+        return;
+      }
+      return;
     }
   };
 
@@ -103,6 +123,7 @@ function Page({ params }) {
       console.log("function called");
     }
   };
+
   return (
     <>
       <div className="self-start text-left w-full px-10">
@@ -112,9 +133,10 @@ function Page({ params }) {
         <Formik
           initialValues={{
             type: "",
-            propertyType: "",
+            propertyType: listing.propertyType | "",
             username: user?.username,
             profileImage: user?.imageUrl,
+            builtIn: listing.builtIn | "",
           }}
           onSubmit={(values) => {
             formSubmit(values);

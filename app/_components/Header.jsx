@@ -57,7 +57,7 @@ function Header() {
           </Link>
         </ul>
         <div className="flex gap-2">
-          <Link href={"add-new-listing"}>
+          <Link href={"/add-new-listing"}>
             <Button>Post Your AD</Button>
           </Link>
           {isSignedIn ? (

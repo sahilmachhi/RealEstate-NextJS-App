@@ -6,8 +6,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Bath, BedDouble, MapPin, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const UserListing = () => {
+  const router = useRouter();
   const [listing, setlisting] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const { user } = useUser();
@@ -19,6 +21,7 @@ const UserListing = () => {
       .select("*, listingImages(*)")
       .eq("createdBy", user.emailAddresses[0].emailAddress);
     if (data) {
+      console.log(data);
       setLoading(false);
       setlisting(data);
       return;
@@ -30,28 +33,48 @@ const UserListing = () => {
   };
 
   const deleteListing = async (id) => {
-    const { error: listingImagesError } = await supabase
+    const { data: imageList, error: dataFindError } = await supabase
+      .from("listing")
+      .select("*, listingImages(*)")
+      .eq("id", id);
+
+    if (dataFindError) {
+      return console.log(error);
+    }
+
+    const images = imageList[0].listingImages;
+
+    for (const image of images) {
+      const { error: bucketDeleteError } = await supabase.storage
+        .from("listingImages")
+        .remove([image.imageName]);
+      if (bucketDeleteError) {
+        return console.log(bucketDeleteError);
+      }
+    }
+
+    const { error: listingImagesDeleteError } = await supabase
       .from("listingImages")
       .delete()
       .eq("image_id", id);
-
-    if (listingImagesError) {
-      console.error("Error deleting from listingImages:", listingImagesError);
+    if (listingImagesDeleteError) {
+      console.error(
+        "Error deleting from listingImages:",
+        listingImagesDeleteError
+      );
       return;
     }
-
-    const { data, error } = await supabase
+    const { data: deleteDone, error: listingDeleteError } = await supabase
       .from("listing")
       .delete()
       .eq("id", id);
-
-    if (data) {
+    if (deleteDone) {
       await userListing();
       return;
-    } else return console.log(error);
+    } else return console.log(listingDeleteError);
   };
-  const handleEdit = () => {
-    console.log("handle edit called");
+  const handleEdit = (id) => {
+    router.push(`/edit-listing/${id}`);
   };
 
   useEffect(() => {
