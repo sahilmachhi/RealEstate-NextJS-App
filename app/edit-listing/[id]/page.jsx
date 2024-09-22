@@ -45,8 +45,9 @@ function Page({ params }) {
     if (error) {
       return console.log(error);
     }
-    console.log(data);
+    // console.log(data);
     setlisting(data[0]);
+    setImages(data[0].listingImages);
     // set data to listing object
   };
   const formSubmit = async (formValue) => {
@@ -132,11 +133,11 @@ function Page({ params }) {
         </h2>
         <Formik
           initialValues={{
-            type: "",
-            propertyType: listing.propertyType | "",
+            type: listing.type ? listing.type : "",
+            // propertyType: listing.propertyType | "",
             username: user?.username,
             profileImage: user?.imageUrl,
-            builtIn: listing.builtIn | "",
+            // builtIn: listing.builtIn | "",
           }}
           onSubmit={(values) => {
             formSubmit(values);
@@ -150,8 +151,10 @@ function Page({ params }) {
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">Rent or Sell</h2>
                     <RadioGroup
-                      defaultValue="rent"
-                      onValueChange={(e) => (values.type = e)}
+                      value={values.type || listing.type || "rent"}
+                      onValueChange={(e) =>
+                        handleChange({ target: { name: "type", value: e } })
+                      }
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="rent" id="rent" />
@@ -159,15 +162,24 @@ function Page({ params }) {
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="sell" id="sell" />
-                        <Label htmlFor="rent">Sell</Label>
+                        <Label htmlFor="sell">Sell</Label>
                       </div>
                     </RadioGroup>
                   </div>
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">select type</h2>
-                    <Select onValueChange={(e) => (values.propertyType = e)}>
+                    <Select
+                      onValueChange={(e) => (values.propertyType = e)}
+                      defaultValue={listing?.propertyType}
+                    >
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Property type" />
+                        <SelectValue
+                          placeholder={
+                            listing.propertyType
+                              ? listing.propertyType
+                              : "Select Property type"
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Single family house">
@@ -186,6 +198,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="bedroom"
                       onChange={handleChange}
+                      defaultValue={listing?.bedroom}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -196,6 +209,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="bathroom"
                       onChange={handleChange}
+                      defaultValue={listing?.bathroom}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -206,6 +220,7 @@ function Page({ params }) {
                       placeholder="ex.1200 Sq.ft"
                       name="builtIn"
                       onChange={handleChange}
+                      defaultValue={listing?.builtIn}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -216,6 +231,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="parking"
                       onChange={handleChange}
+                      defaultValue={listing?.parking}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -226,6 +242,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="lotSize"
                       onChange={handleChange}
+                      defaultValue={listing?.lotSize}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -236,6 +253,7 @@ function Page({ params }) {
                       placeholder="ex. 3200 Sq.ft"
                       name="area"
                       onChange={handleChange}
+                      defaultValue={listing?.area}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -248,6 +266,7 @@ function Page({ params }) {
                       placeholder="12000$"
                       name="price"
                       onChange={handleChange}
+                      defaultValue={listing?.price}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -260,6 +279,7 @@ function Page({ params }) {
                       placeholder="20$"
                       name="hoa"
                       onChange={handleChange}
+                      defaultValue={listing?.hoa}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -269,6 +289,7 @@ function Page({ params }) {
                       placeholder="write description here"
                       name="description"
                       onChange={handleChange}
+                      defaultValue={listing?.description}
                       className="resize-none w-full"
                     ></Textarea>
                   </div>
@@ -277,7 +298,7 @@ function Page({ params }) {
                   <h2 className="text-lg text-slate-700">
                     Upload property Images
                   </h2>
-                  <FileUpload setImages={(value) => setImages(value)} />
+                  <FileUpload setImages={setImages} images={images} />
                 </div>
                 <Button type="submit" className="mt-5">
                   save and publish

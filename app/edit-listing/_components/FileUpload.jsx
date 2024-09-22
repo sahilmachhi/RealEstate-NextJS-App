@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
-function FileUpload({ setImages }) {
+function FileUpload({ setImages, images }) {
   let [imagePreview, setImagePreview] = useState([]);
+  useEffect(() => {
+    if (images) {
+      setImagePreview(images);
+    }
+  }, [images]);
   const handleChange = (e) => {
     const files = Array.from(e.target.files);
     console.log(files);
@@ -10,7 +15,7 @@ function FileUpload({ setImages }) {
     const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreview(previews);
   };
-
+  console.log(imagePreview);
   return (
     <>
       <div>
@@ -57,10 +62,10 @@ function FileUpload({ setImages }) {
             return (
               <div key={index}>
                 <Image
-                  src={image}
+                  src={image.url ? image.url : image}
                   width={150}
                   height={150}
-                  alt={index}
+                  alt={image.imageName ? image.imageName : image}
                   className="rounded-xl bg-cover"
                 />
               </div>
