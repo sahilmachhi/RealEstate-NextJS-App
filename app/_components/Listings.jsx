@@ -5,7 +5,6 @@ import ListingsSkeleton from "./ListingsSkeleton";
 import ListingCard from "./ListingCard";
 
 function Listings({ listing, isLoading }) {
-  console.log(listing);
   return (
     <>
       <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">

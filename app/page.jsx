@@ -1,9 +1,10 @@
-const page = () => {
+import ListingMapView from "./_components/ListingMapView";
+export default function page() {
   return (
-    <div>
-      <h1>hello world</h1>
-    </div>
+    <>
+      <div className="relative block mx-auto md:px-8 px-2 container">
+        <ListingMapView type="rent" />
+      </div>
+    </>
   );
-};
-
-export default page;
+}

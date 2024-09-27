@@ -34,15 +34,6 @@ function Header() {
                 path === "/" ? `font-bold` : ``
               }`}
             >
-              Home
-            </li>
-          </Link>
-          <Link href={"/rent"}>
-            <li
-              className={`hover:font-bold text-sm  cursor-pointer ${
-                path === "/rent" ? `font-bold` : ``
-              }`}
-            >
               for rent
             </li>
           </Link>
