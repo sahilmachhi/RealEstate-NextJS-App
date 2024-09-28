@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -7,15 +8,18 @@ function FileUpload({ setImages, images }) {
     if (images) {
       setImagePreview(images);
     }
-  }, [images]);
+  }, []);
   const handleChange = (e) => {
     const files = Array.from(e.target.files);
-    console.log(files);
     setImages(files);
-    const previews = files.map((file) => URL.createObjectURL(file));
+    console.log(`its image file ${files}`);
+
+    const previews = files.map((file) => {
+      return URL.createObjectURL(file);
+    });
+    console.log(previews);
     setImagePreview(previews);
   };
-  console.log(imagePreview);
   return (
     <>
       <div>
@@ -59,13 +63,15 @@ function FileUpload({ setImages, images }) {
         </div>
         <div className="flex fle-col">
           {imagePreview.map((image, index) => {
+            image.url ? console.log(true) : console.log(false);
+            console.log(image);
             return (
               <div key={index}>
                 <Image
                   src={image.url ? image.url : image}
                   width={150}
                   height={150}
-                  alt={image.imageName ? image.imageName : image}
+                  alt={image.imageName ? image.imageName : image.name}
                   className="rounded-xl bg-cover"
                 />
               </div>

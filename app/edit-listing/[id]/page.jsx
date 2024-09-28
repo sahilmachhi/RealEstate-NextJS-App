@@ -35,7 +35,6 @@ function Page({ params }) {
   const router = useRouter();
   let { user } = useUser();
   const [listing, setlisting] = useState({});
-  console.log(listing);
 
   const getPost = async () => {
     const { data, error } = await supabase
