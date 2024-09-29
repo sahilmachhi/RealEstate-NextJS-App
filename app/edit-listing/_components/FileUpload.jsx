@@ -3,12 +3,17 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 function FileUpload({ setImages, images }) {
+  console.log(images);
+  // console.log(imageArray);
   let [imagePreview, setImagePreview] = useState([]);
-  useEffect(() => {
-    if (images) {
-      setImagePreview(images);
-    }
-  }, []);
+
+  // useEffect(() => {
+  // if (images) {
+  // console.log("usestate called");
+  // setImagePreview(images);
+  // }
+  // }, []);
+
   const handleChange = (e) => {
     const files = Array.from(e.target.files);
     setImages(files);
@@ -58,25 +63,45 @@ function FileUpload({ setImages, images }) {
               multiple
               className="hidden"
               onChange={handleChange}
+              name="image"
             />
           </label>
         </div>
-        <div className="flex fle-col">
-          {imagePreview.map((image, index) => {
-            image.url ? console.log(true) : console.log(false);
-            console.log(image);
-            return (
-              <div key={index}>
-                <Image
-                  src={image.url ? image.url : image}
-                  width={150}
-                  height={150}
-                  alt={image.imageName ? image.imageName : image.name}
-                  className="rounded-xl bg-cover"
-                />
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-4">
+          {imagePreview.length < 1
+            ? images.map((image, index) => {
+                image.url ? console.log(true) : console.log(false);
+                console.log(image);
+                return (
+                  <div key={index}>
+                    <Image
+                      src={image.url ? image.url : image}
+                      width={150}
+                      height={150}
+                      alt={image.imageName ? image.imageName : image.name}
+                      className="rounded-xl bg-cover"
+                    />
+                  </div>
+                );
+              })
+            : null}
+          {imagePreview.length > 0
+            ? imagePreview.map((image, index) => {
+                image.url ? console.log(true) : console.log(false);
+                console.log(image);
+                return (
+                  <div key={index}>
+                    <Image
+                      src={image.url ? image.url : image}
+                      width={150}
+                      height={150}
+                      alt={image.imageName ? image.imageName : image.name}
+                      className="rounded-xl bg-cover"
+                    />
+                  </div>
+                );
+              })
+            : null}
         </div>
       </div>
     </>

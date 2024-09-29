@@ -44,55 +44,64 @@ function Page({ params }) {
     if (error) {
       return console.log(error);
     }
-    // console.log(data);
+    console.log(data);
     setlisting(data[0]);
     setImages(data[0].listingImages);
     // set data to listing object
   };
   const formSubmit = async (formValue) => {
-    const { error: errorUpdateListing } = await supabase
-      .from("listing")
-      .update(formValue)
-      .eq("id", postId)
-      .select();
+    console.log(formValue);
 
-    if (errorUpdateListing) {
-      console.log(errorUpdateListing);
-      return;
-    }
+    // const { error: imageReplaceError } = await supabase
+    //   .from("listingImages")
+    //   .delete()
+    //   .insert([
+    //     { url: publicUrl, image_id: postId, imageName: imageData.path },
+    //   ]);
 
-    for (const image of images) {
-      const fileName = Date.now().toString();
+    // const { error: errorUpdateListing } = await supabase
+    //   .from("listing")
+    //   .update(formValue)
+    //   .eq("id", postId)
+    //   .select();
 
-      const { data: imageData, error: imageUploadError } =
-        await supabase.storage.from("listingImages").upload(fileName, image, {
-          cacheControl: "3600",
-          upsert: false,
-        });
+    // if (errorUpdateListing) {
+    //   console.log(errorUpdateListing);
+    //   return;
+    // }
 
-      if (imageUploadError) {
-        console.log(imageUploadError);
-        continue;
-      }
+    // for (const image of images) {
+    //   const fileName = Date.now().toString();
 
-      const { data } = supabase.storage
-        .from("listingImages")
-        .getPublicUrl(imageData.path);
+    //   const { data: imageData, error: imageUploadError } =
+    //     await supabase.storage.from("listingImages").upload(fileName, image, {
+    //       cacheControl: "3600",
+    //       upsert: false,
+    //     });
 
-      const publicUrl = data.publicUrl;
+    //   if (imageUploadError) {
+    //     console.log(imageUploadError);
+    //     continue;
+    //   }
 
-      const { error: imageAssignError } = await supabase
-        .from("listingImages")
-        .insert([
-          { url: publicUrl, image_id: postId, imageName: imageData.path },
-        ])
-        .eq("id", 1);
-      if (imageAssignError) {
-        console.log(imageAssignError);
-        return;
-      }
-      return;
-    }
+    //   const { data } = supabase.storage
+    //     .from("listingImages")
+    //     .getPublicUrl(imageData.path);
+
+    //   const publicUrl = data.publicUrl;
+
+    //   const { error: imageAssignError } = await supabase
+    //     .from("listingImages")
+    //     .insert([
+    //       { url: publicUrl, image_id: postId, imageName: imageData.path },
+    //     ])
+    //     .eq("id", 1);
+    //   if (imageAssignError) {
+    //     console.log(imageAssignError);
+    //     return;
+    //   }
+    //   return;
+    // }
   };
 
   useEffect(() => {
@@ -112,16 +121,18 @@ function Page({ params }) {
     }
   };
 
-  const publishbtn = async () => {
-    const { error, data } = await supabase
+  const publishbtn = async (e) => {
+    console.log("publish btn called");
+    e.preventDefault();
+    const { error } = await supabase
       .from("listing")
       .update({ active: true })
       .eq("id", postId)
       .select();
     if (error) console.log(error);
-    else {
-      console.log("function called");
-    }
+
+    console.log("function called");
+    router.push("/");
   };
 
   return (
@@ -132,15 +143,13 @@ function Page({ params }) {
         </h2>
         <Formik
           initialValues={{
-            type: listing.type ? listing.type : "",
-            // propertyType: listing.propertyType | "",
+            // propertyType: listing.propertyType || "",
             username: user?.username,
             profileImage: user?.imageUrl,
-            // builtIn: listing.builtIn | "",
+            // builtIn: listing.builtIn || "",
           }}
           onSubmit={(values) => {
             formSubmit(values);
-            publishbtn();
           }}
         >
           {({ values, handleChange, handleSubmit }) => (
@@ -297,11 +306,26 @@ function Page({ params }) {
                   <h2 className="text-lg text-slate-700">
                     Upload property Images
                   </h2>
-                  <FileUpload setImages={setImages} images={images} />
+                  <FileUpload
+                    setImages={setImages}
+                    images={images}
+                    imageArray={listing?.listingImages}
+                  />
                 </div>
-                <Button type="submit" className="mt-5">
-                  save and publish
-                </Button>
+                <div className="flex gap-5">
+                  <Button type="submit" className="mt-5">
+                    save
+                  </Button>
+                  <Button
+                    type="button"
+                    className="mt-5"
+                    onClick={(e) => {
+                      publishbtn(e);
+                    }}
+                  >
+                    publish now
+                  </Button>
+                </div>
               </div>
             </Form>
           )}
