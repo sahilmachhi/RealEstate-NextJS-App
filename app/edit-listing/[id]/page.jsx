@@ -33,8 +33,35 @@ function Page({ params }) {
   let postId = params.id;
   const [images, setImages] = useState([]);
   const router = useRouter();
-  let { user } = useUser();
   const [listing, setlisting] = useState({});
+
+  const initialValues = {
+    area: listing?.area,
+    bathroom: listing?.bathroom,
+    bedroom: listing?.bedroom,
+    builtIn: listing?.builtIn,
+    description: listing?.description,
+    hoa: listing?.hoa,
+    lotSize: listing?.lotSize,
+    parking: listing?.parking,
+    price: listing?.price,
+    propertyType: listing?.propertyType,
+    type: listing?.type,
+  };
+
+  // const values = {
+  //   area: listing?.area,
+  //   bathroom: listing?.bathroom,
+  //   bedroom: listing?.bedroom,
+  //   builtIn: listing?.builtIn,
+  //   description: listing?.description,
+  //   hoa: listing?.hoa,
+  //   lotSize: listing?.lotSize,
+  //   parking: listing?.parking,
+  //   price: listing?.price,
+  //   propertyType: listing?.propertyType,
+  //   type: listing?.type,
+  // };
 
   const getPost = async () => {
     const { data, error } = await supabase
@@ -44,7 +71,6 @@ function Page({ params }) {
     if (error) {
       return console.log(error);
     }
-    console.log(data);
     setlisting(data[0]);
     setImages(data[0].listingImages);
     // set data to listing object
@@ -142,24 +168,20 @@ function Page({ params }) {
           Enter some more details about your form listing
         </h2>
         <Formik
-          initialValues={{
-            // propertyType: listing.propertyType || "",
-            username: user?.username,
-            profileImage: user?.imageUrl,
-            // builtIn: listing.builtIn || "",
-          }}
+          initialValues={initialValues}
           onSubmit={(values) => {
             formSubmit(values);
           }}
+          enableReinitialize
         >
-          {({ values, handleChange, handleSubmit }) => (
+          {({ handleChange, handleSubmit }) => (
             <Form onSubmit={handleSubmit}>
               <div className="shadow-md p-8 rounded-lg ">
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">Rent or Sell</h2>
                     <RadioGroup
-                      value={values.type || listing.type || "rent"}
+                      defaultValue={initialValues.type}
                       onValueChange={(e) =>
                         handleChange({ target: { name: "type", value: e } })
                       }
@@ -178,7 +200,7 @@ function Page({ params }) {
                     <h2 className="text-lg text-slate-700">select type</h2>
                     <Select
                       onValueChange={(e) => (values.propertyType = e)}
-                      defaultValue={listing?.propertyType}
+                      defaultValue={initialValues.propertyType}
                     >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue
@@ -206,7 +228,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="bedroom"
                       onChange={handleChange}
-                      defaultValue={listing?.bedroom}
+                      defaultValue={initialValues.bedroom}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -217,7 +239,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="bathroom"
                       onChange={handleChange}
-                      defaultValue={listing?.bathroom}
+                      defaultValue={initialValues.bathroom}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -228,7 +250,7 @@ function Page({ params }) {
                       placeholder="ex.1200 Sq.ft"
                       name="builtIn"
                       onChange={handleChange}
-                      defaultValue={listing?.builtIn}
+                      defaultValue={initialValues.builtIn}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -239,7 +261,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="parking"
                       onChange={handleChange}
-                      defaultValue={listing?.parking}
+                      defaultValue={initialValues.parking}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -250,7 +272,7 @@ function Page({ params }) {
                       placeholder="ex.2"
                       name="lotSize"
                       onChange={handleChange}
-                      defaultValue={listing?.lotSize}
+                      defaultValue={initialValues.lotSize}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -261,7 +283,7 @@ function Page({ params }) {
                       placeholder="ex. 3200 Sq.ft"
                       name="area"
                       onChange={handleChange}
-                      defaultValue={listing?.area}
+                      defaultValue={initialValues.area}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -274,7 +296,7 @@ function Page({ params }) {
                       placeholder="12000$"
                       name="price"
                       onChange={handleChange}
-                      defaultValue={listing?.price}
+                      defaultValue={initialValues.price}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -286,8 +308,8 @@ function Page({ params }) {
                       className="w-32"
                       placeholder="20$"
                       name="hoa"
+                      defaultValue={initialValues.hoa}
                       onChange={handleChange}
-                      defaultValue={listing?.hoa}
                     ></Input>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -297,7 +319,7 @@ function Page({ params }) {
                       placeholder="write description here"
                       name="description"
                       onChange={handleChange}
-                      defaultValue={listing?.description}
+                      defaultValue={initialValues.description}
                       className="resize-none w-full"
                     ></Textarea>
                   </div>
@@ -306,11 +328,7 @@ function Page({ params }) {
                   <h2 className="text-lg text-slate-700">
                     Upload property Images
                   </h2>
-                  <FileUpload
-                    setImages={setImages}
-                    images={images}
-                    imageArray={listing?.listingImages}
-                  />
+                  <FileUpload setImages={setImages} images={images} />
                 </div>
                 <div className="flex gap-5">
                   <Button type="submit" className="mt-5">

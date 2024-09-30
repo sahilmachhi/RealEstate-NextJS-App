@@ -24,13 +24,16 @@ function Page() {
   }
 
   const handleSubmit = async (e) => {
+    username;
     e.preventDefault();
     const { error, data } = await supabase
       .from("listing")
       .insert([
         {
           address: address,
-          createdBy: user.primaryEmailAddress.emailAddress,
+          createdBy: user?.primaryEmailAddress.emailAddress,
+          username: user?.username,
+          profileImage: user?.imageUrl,
         },
       ])
       .select();

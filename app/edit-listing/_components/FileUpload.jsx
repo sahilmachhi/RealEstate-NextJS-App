@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 function FileUpload({ setImages, images }) {
-  console.log(images);
-  // console.log(imageArray);
+  // console.log(images);
+  // // console.log(imageArray);
   let [imagePreview, setImagePreview] = useState([]);
 
   // useEffect(() => {
   // if (images) {
-  // console.log("usestate called");
+  // // console.log("usestate called");
   // setImagePreview(images);
   // }
   // }, []);
@@ -17,12 +17,12 @@ function FileUpload({ setImages, images }) {
   const handleChange = (e) => {
     const files = Array.from(e.target.files);
     setImages(files);
-    console.log(`its image file ${files}`);
+    // console.log(`its image file ${files}`);
 
     const previews = files.map((file) => {
       return URL.createObjectURL(file);
     });
-    console.log(previews);
+    // console.log(previews);
     setImagePreview(previews);
   };
   return (
@@ -70,8 +70,6 @@ function FileUpload({ setImages, images }) {
         <div className="grid grid-cols-4">
           {imagePreview.length < 1
             ? images.map((image, index) => {
-                image.url ? console.log(true) : console.log(false);
-                console.log(image);
                 return (
                   <div key={index}>
                     <Image
@@ -87,8 +85,6 @@ function FileUpload({ setImages, images }) {
             : null}
           {imagePreview.length > 0
             ? imagePreview.map((image, index) => {
-                image.url ? console.log(true) : console.log(false);
-                console.log(image);
                 return (
                   <div key={index}>
                     <Image
