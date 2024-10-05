@@ -47,6 +47,7 @@ function Page({ params }) {
     price: listing?.price,
     propertyType: listing?.propertyType,
     type: listing?.type,
+    listingImages: listing?.listingImages,
   };
 
   // const values = {
@@ -72,9 +73,11 @@ function Page({ params }) {
       return console.log(error);
     }
     setlisting(data[0]);
+    console.log(data[0]);
     setImages(data[0].listingImages);
     // set data to listing object
   };
+
   const formSubmit = async (formValue) => {
     console.log(formValue);
 
@@ -85,30 +88,40 @@ function Page({ params }) {
     //     { url: publicUrl, image_id: postId, imageName: imageData.path },
     //   ]);
 
-    // const { error: errorUpdateListing } = await supabase
-    //   .from("listing")
-    //   .update(formValue)
-    //   .eq("id", postId)
-    //   .select();
+    const inputData = formValue;
 
-    // if (errorUpdateListing) {
-    //   console.log(errorUpdateListing);
-    //   return;
-    // }
+    // delete inputData.listingImages;
 
-    // for (const image of images) {
-    //   const fileName = Date.now().toString();
+    console.log(inputData);
+    const { error: errorUpdateListing } = await supabase
+      .from("listing")
+      .update(inputData)
+      .eq("id", postId)
+      .select();
 
-    //   const { data: imageData, error: imageUploadError } =
-    //     await supabase.storage.from("listingImages").upload(fileName, image, {
-    //       cacheControl: "3600",
-    //       upsert: false,
-    //     });
+    if (errorUpdateListing) {
+      console.log(errorUpdateListing);
+      return;
+    }
 
-    //   if (imageUploadError) {
-    //     console.log(imageUploadError);
-    //     continue;
-    //   }
+    const ImageArray = formValue.listingImages;
+    console.log(ImageArray);
+    console.log(formValue);
+
+    for (const image of ImageArray) {
+      const fileName = Date.now().toString();
+      const { data: imageData, error: imageUploadError } =
+        await supabase.storage.from("listingImages").upload(fileName, image, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+      if (imageUploadError) {
+        console.log(imageUploadError);
+        continue;
+      }
+    }
+
+    //
 
     //   const { data } = supabase.storage
     //     .from("listingImages")
@@ -174,7 +187,7 @@ function Page({ params }) {
           }}
           enableReinitialize
         >
-          {({ handleChange, handleSubmit }) => (
+          {({ handleChange, handleSubmit, setFieldValue }) => (
             <Form onSubmit={handleSubmit}>
               <div className="shadow-md p-8 rounded-lg ">
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -199,7 +212,14 @@ function Page({ params }) {
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">select type</h2>
                     <Select
-                      onValueChange={(e) => (values.propertyType = e)}
+                      onValueChange={(e) =>
+                        handleChange({
+                          target: {
+                            name: "propertyType",
+                            value: e,
+                          },
+                        })
+                      }
                       defaultValue={initialValues.propertyType}
                     >
                       <SelectTrigger className="w-[180px]">
@@ -328,7 +348,12 @@ function Page({ params }) {
                   <h2 className="text-lg text-slate-700">
                     Upload property Images
                   </h2>
-                  <FileUpload setImages={setImages} images={images} />
+                  <FileUpload
+                    setImages={setImages}
+                    images={images}
+                    handleChange={handleChange}
+                    setFieldValue={setFieldValue}
+                  />
                 </div>
                 <div className="flex gap-5">
                   <Button type="submit" className="mt-5">

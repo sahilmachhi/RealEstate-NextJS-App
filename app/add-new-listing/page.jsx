@@ -24,7 +24,6 @@ function Page() {
   }
 
   const handleSubmit = async (e) => {
-    username;
     e.preventDefault();
     const { error, data } = await supabase
       .from("listing")

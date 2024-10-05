@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { Formik } from "formik";
 
-function FileUpload({ setImages, images }) {
+function FileUpload({ setImages, images, handleChange, setFieldValue }) {
   // console.log(images);
   // // console.log(imageArray);
   let [imagePreview, setImagePreview] = useState([]);
@@ -14,17 +15,17 @@ function FileUpload({ setImages, images }) {
   // }
   // }, []);
 
-  const handleChange = (e) => {
-    const files = Array.from(e.target.files);
-    setImages(files);
-    // console.log(`its image file ${files}`);
+  // const handleChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   setImages(files);
+  //   // console.log(`its image file ${files}`);
 
-    const previews = files.map((file) => {
-      return URL.createObjectURL(file);
-    });
-    // console.log(previews);
-    setImagePreview(previews);
-  };
+  //   const previews = files.map((file) => {
+  //     return URL.createObjectURL(file);
+  //   });
+  //   // console.log(previews);
+  //   setImagePreview(previews);
+  // };
   return (
     <>
       <div>
@@ -62,12 +63,15 @@ function FileUpload({ setImages, images }) {
               type="file"
               multiple
               className="hidden"
-              onChange={handleChange}
-              name="image"
+              onChange={(e) => {
+                const images = Array.from(e.target.files);
+                setFieldValue("listingImages", images);
+              }}
+              name="listingImages"
             />
           </label>
         </div>
-        <div className="grid grid-cols-4">
+        {/* <div className="grid grid-cols-4">
           {imagePreview.length < 1
             ? images.map((image, index) => {
                 return (
@@ -98,7 +102,7 @@ function FileUpload({ setImages, images }) {
                 );
               })
             : null}
-        </div>
+        </div> */}
       </div>
     </>
   );
