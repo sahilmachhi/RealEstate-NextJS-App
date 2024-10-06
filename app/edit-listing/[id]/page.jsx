@@ -46,23 +46,9 @@ function Page({ params }) {
     parking: listing?.parking,
     price: listing?.price,
     propertyType: listing?.propertyType,
-    type: listing?.type,
+    Type: listing?.type,
     listingImages: listing?.listingImages,
   };
-
-  // const values = {
-  //   area: listing?.area,
-  //   bathroom: listing?.bathroom,
-  //   bedroom: listing?.bedroom,
-  //   builtIn: listing?.builtIn,
-  //   description: listing?.description,
-  //   hoa: listing?.hoa,
-  //   lotSize: listing?.lotSize,
-  //   parking: listing?.parking,
-  //   price: listing?.price,
-  //   propertyType: listing?.propertyType,
-  //   type: listing?.type,
-  // };
 
   const getPost = async () => {
     const { data, error } = await supabase
@@ -81,66 +67,80 @@ function Page({ params }) {
   const formSubmit = async (formValue) => {
     console.log(formValue);
 
-    // const { error: imageReplaceError } = await supabase
-    //   .from("listingImages")
+    let ListingImages = formValue.listingImages;
+    const imagesToBeDeleted = listing.listingImages;
+
+    // for (const image of imagesToBeDeleted) {
+    //   const { error: bucketDeleteError } = await supabase.storage
+    //     .from("listingImages")
+    //     .remove([image.imageName]);
+    //   if (bucketDeleteError) {
+    //     return console.log(bucketDeleteError);
+    //   }
+    // }
+
+    // const { error: deleteExistingImageError } = await supabase
+    //   .from("listingImage")
     //   .delete()
-    //   .insert([
-    //     { url: publicUrl, image_id: postId, imageName: imageData.path },
-    //   ]);
+    //   .eq("image_id", postId);
 
-    const inputData = formValue;
+    // if (deleteExistingImageError) console.log(deleteExistingImageError);
 
-    // delete inputData.listingImages;
-
-    console.log(inputData);
-    const { error: errorUpdateListing } = await supabase
-      .from("listing")
-      .update(inputData)
-      .eq("id", postId)
-      .select();
-
-    if (errorUpdateListing) {
-      console.log(errorUpdateListing);
-      return;
-    }
-
-    const ImageArray = formValue.listingImages;
-    console.log(ImageArray);
-    console.log(formValue);
-
-    for (const image of ImageArray) {
+    for (const image of ListingImages) {
       const fileName = Date.now().toString();
+
       const { data: imageData, error: imageUploadError } =
         await supabase.storage.from("listingImages").upload(fileName, image, {
           cacheControl: "3600",
           upsert: false,
         });
+
       if (imageUploadError) {
         console.log(imageUploadError);
         continue;
       }
+
+      const { data } = supabase.storage
+        .from("listingImages")
+        .getPublicUrl(imageData.path);
+
+      const publicUrl = data.publicUrl;
+
+      const { error: imageAssignError } = await supabase
+        .from("listingImages")
+        .insert([
+          { url: publicUrl, image_id: postId, imageName: imageData.path },
+        ])
+        .eq("id", 1);
+      if (imageAssignError) {
+        console.log(imageAssignError);
+        return;
+      }
     }
 
-    //
-
-    //   const { data } = supabase.storage
-    //     .from("listingImages")
-    //     .getPublicUrl(imageData.path);
-
-    //   const publicUrl = data.publicUrl;
-
-    //   const { error: imageAssignError } = await supabase
-    //     .from("listingImages")
-    //     .insert([
-    //       { url: publicUrl, image_id: postId, imageName: imageData.path },
-    //     ])
-    //     .eq("id", 1);
-    //   if (imageAssignError) {
-    //     console.log(imageAssignError);
-    //     return;
-    //   }
-    //   return;
-    // }
+    const { error: errorUpdateListing, data: updatedData } = await supabase
+      .from("listing")
+      .update({
+        area: formValue?.area,
+        bathroom: formValue?.bathroom,
+        bedroom: formValue?.bedroom,
+        builtIn: formValue?.builtIn,
+        description: formValue?.description,
+        hoa: formValue?.hoa,
+        lotSize: formValue?.lotSize,
+        parking: formValue?.parking,
+        price: formValue?.price,
+        propertyType: formValue?.propertyType,
+        type: formValue?.type,
+      })
+      .eq("id", postId)
+      .select();
+    if (errorUpdateListing) {
+      console.log(errorUpdateListing);
+      return;
+    }
+    console.log(updatedData);
+    return;
   };
 
   useEffect(() => {
@@ -194,18 +194,23 @@ function Page({ params }) {
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">Rent or Sell</h2>
                     <RadioGroup
-                      defaultValue={initialValues.type}
+                      value={initialValues.Type}
                       onValueChange={(e) =>
-                        handleChange({ target: { name: "type", value: e } })
+                        handleChange({
+                          target: {
+                            name: "propertyType",
+                            value: e,
+                          },
+                        })
                       }
                     >
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="rent" id="rent" />
-                        <Label htmlFor="rent">Rent</Label>
+                        <RadioGroupItem value="rent" id="r1" />
+                        <Label htmlFor="r1">Rent</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="sell" id="sell" />
-                        <Label htmlFor="sell">Sell</Label>
+                        <RadioGroupItem value="sell" id="r2" />
+                        <Label htmlFor="r2">Sell</Label>
                       </div>
                     </RadioGroup>
                   </div>

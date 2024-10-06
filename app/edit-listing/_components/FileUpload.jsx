@@ -3,29 +3,27 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Formik } from "formik";
 
-function FileUpload({ setImages, images, handleChange, setFieldValue }) {
-  // console.log(images);
-  // // console.log(imageArray);
+function FileUpload({ setImages, images, setFieldValue }) {
   let [imagePreview, setImagePreview] = useState([]);
 
-  // useEffect(() => {
-  // if (images) {
-  // // console.log("usestate called");
-  // setImagePreview(images);
-  // }
-  // }, []);
+  useEffect(() => {
+    if (images) {
+      console.log("usestate called");
+      setImagePreview(images);
+    }
+  }, []);
 
-  // const handleChange = (e) => {
-  //   const files = Array.from(e.target.files);
-  //   setImages(files);
-  //   // console.log(`its image file ${files}`);
+  const handleImagePreview = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+    // console.log(`its image file ${files}`);
 
-  //   const previews = files.map((file) => {
-  //     return URL.createObjectURL(file);
-  //   });
-  //   // console.log(previews);
-  //   setImagePreview(previews);
-  // };
+    const previews = files.map((file) => {
+      return URL.createObjectURL(file);
+    });
+    // console.log(previews);
+    setImagePreview(previews);
+  };
   return (
     <>
       <div>
@@ -66,43 +64,46 @@ function FileUpload({ setImages, images, handleChange, setFieldValue }) {
               onChange={(e) => {
                 const images = Array.from(e.target.files);
                 setFieldValue("listingImages", images);
+                handleImagePreview(e);
               }}
               name="listingImages"
             />
           </label>
         </div>
-        {/* <div className="grid grid-cols-4">
-          {imagePreview.length < 1
-            ? images.map((image, index) => {
-                return (
-                  <div key={index}>
-                    <Image
-                      src={image.url ? image.url : image}
-                      width={150}
-                      height={150}
-                      alt={image.imageName ? image.imageName : image.name}
-                      className="rounded-xl bg-cover"
-                    />
-                  </div>
-                );
-              })
-            : null}
-          {imagePreview.length > 0
-            ? imagePreview.map((image, index) => {
-                return (
-                  <div key={index}>
-                    <Image
-                      src={image.url ? image.url : image}
-                      width={150}
-                      height={150}
-                      alt={image.imageName ? image.imageName : image.name}
-                      className="rounded-xl bg-cover"
-                    />
-                  </div>
-                );
-              })
-            : null}
-        </div> */}
+        {
+          <div className="grid grid-cols-4">
+            {imagePreview.length < 1
+              ? images.map((image, index) => {
+                  return (
+                    <div key={index}>
+                      <Image
+                        src={image.url ? image.url : image}
+                        width={150}
+                        height={150}
+                        alt={image.imageName ? image.imageName : image.name}
+                        className="rounded-xl bg-cover"
+                      />
+                    </div>
+                  );
+                })
+              : null}
+            {imagePreview.length > 0
+              ? imagePreview.map((image, index) => {
+                  return (
+                    <div key={index}>
+                      <Image
+                        src={image.url ? image.url : image}
+                        width={150}
+                        height={150}
+                        alt={image.imageName ? image.imageName : image.name}
+                        className="rounded-xl bg-cover"
+                      />
+                    </div>
+                  );
+                })
+              : null}
+          </div>
+        }
       </div>
     </>
   );
