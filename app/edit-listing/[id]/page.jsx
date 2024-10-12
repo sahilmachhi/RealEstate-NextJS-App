@@ -34,6 +34,8 @@ function Page({ params }) {
   const [images, setImages] = useState([]);
   const router = useRouter();
   const [listing, setlisting] = useState({});
+  const [isSaved, setSaving] = useState(false);
+  const [isPublished, setPublishing] = useState(false);
 
   const initialValues = {
     area: listing?.area,
@@ -46,7 +48,7 @@ function Page({ params }) {
     parking: listing?.parking,
     price: listing?.price,
     propertyType: listing?.propertyType,
-    Type: listing?.type,
+    type: listing?.type || "rent",
     listingImages: listing?.listingImages,
   };
 
@@ -65,56 +67,70 @@ function Page({ params }) {
   };
 
   const formSubmit = async (formValue) => {
+    debugger;
+    setSaving(true);
     console.log(formValue);
 
     let ListingImages = formValue.listingImages;
     const imagesToBeDeleted = listing.listingImages;
+    if (JSON.stringify(ListingImages) !== JSON.stringify(imagesToBeDeleted)) {
+      // delete existing images from bucket
+      for (const image of imagesToBeDeleted) {
+        const { error: bucketDeleteError } = await supabase.storage
+          .from("listingImages")
+          .remove([image.imageName]);
+        if (bucketDeleteError) {
+          setSaving(false);
+          return console.log(bucketDeleteError);
+        }
+      }
+      // delete existing image location from bucket
+      const { error: deleteExistingImageError } = await supabase
+        .from("listingImages")
+        .delete()
+        .eq("image_id", postId);
 
-    // for (const image of imagesToBeDeleted) {
-    //   const { error: bucketDeleteError } = await supabase.storage
-    //     .from("listingImages")
-    //     .remove([image.imageName]);
-    //   if (bucketDeleteError) {
-    //     return console.log(bucketDeleteError);
-    //   }
-    // }
-
-    // const { error: deleteExistingImageError } = await supabase
-    //   .from("listingImage")
-    //   .delete()
-    //   .eq("image_id", postId);
-
-    // if (deleteExistingImageError) console.log(deleteExistingImageError);
-
-    for (const image of ListingImages) {
-      const fileName = Date.now().toString();
-
-      const { data: imageData, error: imageUploadError } =
-        await supabase.storage.from("listingImages").upload(fileName, image, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (imageUploadError) {
-        console.log(imageUploadError);
-        continue;
+      if (deleteExistingImageError) {
+        setSaving(false);
+        console.log(deleteExistingImageError);
       }
 
-      const { data } = supabase.storage
-        .from("listingImages")
-        .getPublicUrl(imageData.path);
+      // upload new images in bucket
+      for (const image of ListingImages) {
+        const fileName = Date.now().toString();
 
-      const publicUrl = data.publicUrl;
+        const { data: imageData, error: imageUploadError } =
+          await supabase.storage.from("listingImages").upload(fileName, image, {
+            cacheControl: "3600",
+            upsert: false,
+          });
 
-      const { error: imageAssignError } = await supabase
-        .from("listingImages")
-        .insert([
-          { url: publicUrl, image_id: postId, imageName: imageData.path },
-        ])
-        .eq("id", 1);
-      if (imageAssignError) {
-        console.log(imageAssignError);
-        return;
+        if (imageUploadError) {
+          setSaving(false);
+          console.log(imageUploadError);
+          continue;
+        }
+
+        // get url of image from bucket
+        const { data } = supabase.storage
+          .from("listingImages")
+          .getPublicUrl(imageData.path);
+
+        const publicUrl = data.publicUrl;
+
+        // assign image url to listing ListingImages
+        const { error: imageAssignError } = await supabase
+          .from("listingImages")
+          .insert([
+            { url: publicUrl, image_id: postId, imageName: imageData.path },
+          ])
+          .eq("id", 1);
+
+        if (imageAssignError) {
+          setSaving(false);
+          console.log(imageAssignError);
+          return;
+        }
       }
     }
 
@@ -136,10 +152,13 @@ function Page({ params }) {
       .eq("id", postId)
       .select();
     if (errorUpdateListing) {
+      setSaving(false);
       console.log(errorUpdateListing);
       return;
     }
     console.log(updatedData);
+    getPost();
+    setSaving(false);
     return;
   };
 
@@ -161,6 +180,7 @@ function Page({ params }) {
   };
 
   const publishbtn = async (e) => {
+    setPublishing(true);
     console.log("publish btn called");
     e.preventDefault();
     const { error } = await supabase
@@ -168,8 +188,11 @@ function Page({ params }) {
       .update({ active: true })
       .eq("id", postId)
       .select();
-    if (error) console.log(error);
-
+    if (error) {
+      console.log(error);
+      setPublishing(false);
+    }
+    setPublishing(false);
     console.log("function called");
     router.push("/");
   };
@@ -194,15 +217,17 @@ function Page({ params }) {
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">Rent or Sell</h2>
                     <RadioGroup
-                      value={initialValues.Type}
-                      onValueChange={(e) =>
+                      value={initialValues.type}
+                      onValueChange={(e) => {
+                        // debugger;
                         handleChange({
                           target: {
-                            name: "propertyType",
+                            name: "type",
                             value: e,
                           },
-                        })
-                      }
+                        });
+                        console.log("clicked");
+                      }}
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="rent" id="r1" />
@@ -217,14 +242,15 @@ function Page({ params }) {
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">select type</h2>
                     <Select
-                      onValueChange={(e) =>
+                      onValueChange={(e) => {
+                        debugger;
                         handleChange({
                           target: {
                             name: "propertyType",
                             value: e,
                           },
-                        })
-                      }
+                        });
+                      }}
                       defaultValue={initialValues.propertyType}
                     >
                       <SelectTrigger className="w-[180px]">
@@ -361,18 +387,26 @@ function Page({ params }) {
                   />
                 </div>
                 <div className="flex gap-5">
-                  <Button type="submit" className="mt-5">
-                    save
-                  </Button>
-                  <Button
-                    type="button"
-                    className="mt-5"
-                    onClick={(e) => {
-                      publishbtn(e);
-                    }}
-                  >
-                    publish now
-                  </Button>
+                  {isSaved ? (
+                    <Button className="mt-5">saving</Button>
+                  ) : (
+                    <Button type="submit" className="mt-5">
+                      save
+                    </Button>
+                  )}
+                  {isPublished ? (
+                    <Button>publishing</Button>
+                  ) : (
+                    <Button
+                      type="button"
+                      className="mt-5"
+                      onClick={(e) => {
+                        publishbtn(e);
+                      }}
+                    >
+                      publish now
+                    </Button>
+                  )}
                 </div>
               </div>
             </Form>

@@ -12,6 +12,7 @@ const UserListing = () => {
   const router = useRouter();
   const [listing, setlisting] = useState([]);
   const [isLoading, setLoading] = useState(true);
+  const [isDeleting, setDeleting] = useState(false);
   const { user } = useUser();
 
   const userListing = async () => {
@@ -33,6 +34,7 @@ const UserListing = () => {
   };
 
   const deleteListing = async (id) => {
+    setDeleting(true);
     const { data: imageList, error: dataFindError } = await supabase
       .from("listing")
       .select("*, listingImages(*)")
@@ -69,9 +71,14 @@ const UserListing = () => {
       .delete()
       .eq("id", id);
     if (deleteDone) {
-      await userListing();
+      userListing();
+      setDeleting(false);
       return;
-    } else return console.log(listingDeleteError);
+    } else {
+      setDeleting(false);
+      console.log(listingDeleteError);
+      return;
+    }
   };
   const handleEdit = (id) => {
     router.push(`/edit-listing/${id}`);
@@ -136,12 +143,16 @@ const UserListing = () => {
                 >
                   edit
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => deleteListing(lis.id)}
-                >
-                  delete
-                </Button>
+                {isDeleting ? (
+                  <Button variant="ghost">deleting</Button>
+                ) : (
+                  <Button
+                    variant="destructive"
+                    onClick={() => deleteListing(lis.id)}
+                  >
+                    delete
+                  </Button>
+                )}
               </div>
             </div>
           );
