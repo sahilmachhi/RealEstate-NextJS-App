@@ -210,14 +210,14 @@ function Page({ params }) {
           }}
           enableReinitialize
         >
-          {({ handleChange, handleSubmit, setFieldValue }) => (
+          {({ handleChange, handleSubmit, setFieldValue, values }) => (
             <Form onSubmit={handleSubmit}>
               <div className="shadow-md p-8 rounded-lg ">
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                   <div className="flex flex-col gap-2">
                     <h2 className="text-lg text-slate-700">Rent or Sell</h2>
                     <RadioGroup
-                      value={initialValues.type}
+                      value={values.type}
                       onValueChange={(e) => {
                         // debugger;
                         handleChange({
@@ -395,7 +395,7 @@ function Page({ params }) {
                     </Button>
                   )}
                   {isPublished ? (
-                    <Button>publishing</Button>
+                    <Button className="mt-5">publishing</Button>
                   ) : (
                     <Button
                       type="button"
