@@ -14,6 +14,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import MobileSidebar from "./MobileSidebar";
 
 function Header() {
   const path = usePathname();
@@ -40,14 +53,14 @@ function Header() {
           <Link href={"/for-sell"}>
             <li
               className={`hover:font-bold text-sm  cursor-pointer ${
-                path === "/agent" ? `font-bold` : ``
+                path === "/for-sell" ? `font-bold` : ``
               }`}
             >
               for sell
             </li>
           </Link>
         </ul>
-        <div className="flex gap-2">
+        <div className="md:flex hidden gap-2">
           <Link href={"/add-new-listing"}>
             <Button>Post Your AD</Button>
           </Link>
@@ -81,6 +94,16 @@ function Header() {
               <Button variant="outlined">Login</Button>
             </Link>
           )}
+        </div>
+        <div className="flex md:hidden">
+          <Sheet>
+            <SheetTrigger>Open</SheetTrigger>
+            <MobileSidebar
+              path={path}
+              user={user}
+              isSignedIn={isSignedIn}
+            ></MobileSidebar>
+          </Sheet>
         </div>
       </div>
     </>
