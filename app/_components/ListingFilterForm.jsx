@@ -26,7 +26,7 @@ function ListingFilterForm({ setListing, type }) {
       query = query.eq("propertyType", homeType);
     }
     e.preventDefault();
-    console.log(homeType);
+    // console.log(homeType);
     const { data, error } = await query;
 
     if (error) console.log(error);
@@ -47,7 +47,7 @@ function ListingFilterForm({ setListing, type }) {
           <Button>Search</Button>
         </div>
 
-        <div className="grid justify-start lg:grid-cols-4 grid-cols-2  items-center gap-5">
+        <div className="grid justify-items-center lg:justify-items-start  lg:grid-cols-4 grid-cols-1 sm:grid-cols-2 gap-5 w-full">
           <FilterSelection
             setBathroomFilter={setBathroomFilter}
             setParkingFilter={setParkingFilter}

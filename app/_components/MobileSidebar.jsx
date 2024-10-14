@@ -37,7 +37,7 @@ const MobileSidebar = ({ path, user, isSignedIn }) => {
             <SheetClose asChild>
               <Link href={"/"} className="">
                 <li
-                  className={`hover:text-black text-gray-500  cursor-pointer ${
+                  className={`hover:text-black text-gray-300  cursor-pointer ${
                     path === "/" ? `text-black` : ``
                   }`}
                 >
@@ -48,7 +48,7 @@ const MobileSidebar = ({ path, user, isSignedIn }) => {
             <SheetClose asChild>
               <Link href={"/for-sell"} className="">
                 <li
-                  className={`hover:text-black text-gray-500  cursor-pointer ${
+                  className={`hover:text-black text-gray-300  cursor-pointer ${
                     path === "/for-sell" ? `text-black` : ``
                   }`}
                 >
@@ -58,22 +58,29 @@ const MobileSidebar = ({ path, user, isSignedIn }) => {
             </SheetClose>
           </ul>
           {isSignedIn ? (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 w-full">
               <SheetClose asChild>
-                <Button>
-                  <Link href={"/user"}>Profile</Link>
-                </Button>
+                <Link href={"/user"}>
+                  <Button className="w-full">Profile</Button>
+                </Link>
               </SheetClose>
 
               <SheetClose asChild>
-                <Button>
-                  <Link href={"/user/my-listing"}>My Listing</Link>
-                </Button>
+                <Link href={"/add-new-listing"}>
+                  <Button className="w-full">Post Your AD</Button>
+                </Link>
               </SheetClose>
+
               <SheetClose asChild>
-                <Button>
-                  <SignOutButton>Log Out</SignOutButton>
-                </Button>
+                <Link href={"/user/my-listing"}>
+                  <Button className="w-full">My Listing</Button>
+                </Link>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <SignOutButton>
+                  <Button className="w-full">Log Out</Button>
+                </SignOutButton>
               </SheetClose>
             </div>
           ) : null}
