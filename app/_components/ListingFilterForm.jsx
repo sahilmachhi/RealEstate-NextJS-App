@@ -41,7 +41,7 @@ function ListingFilterForm({ setListing, type }) {
         <div className="flex flex-row justify-between items-center gap-5">
           <Input
             type="text"
-            placeholder="text"
+            placeholder="Search Listing here"
             onChange={(e) => setSearch(e.target.value)}
           ></Input>
           <Button>Search</Button>

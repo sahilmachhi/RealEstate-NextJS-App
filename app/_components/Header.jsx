@@ -27,6 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MobileSidebar from "./MobileSidebar";
+import { Menu } from "lucide-react";
 
 function Header() {
   const path = usePathname();
@@ -36,8 +37,11 @@ function Header() {
     <>
       <div className="w-full flex justify-between items-center fixed top-0 bg-white shadow-sm px-20 py-2 z-50">
         <div>
-          <Link href={"/"} className="w-20 relative h-20 block">
-            <Image src={"/logo.svg"} fill={true} alt="logo" />
+          <Link href={"/"} className="w-20 relative h-20 flex items-center justify-center">
+            {/* <Image src={"/logo.svg"} fill={true} alt="logo" /> */}
+            <span className="text-lg font-black font-sarif">
+              RealEstate Listing
+            </span>
           </Link>
         </div>
         <ul className="hidden md:flex gap-14">
@@ -97,7 +101,9 @@ function Header() {
         </div>
         <div className="flex md:hidden">
           <Sheet>
-            <SheetTrigger>Open</SheetTrigger>
+            <SheetTrigger>
+            <Menu  />
+            </SheetTrigger>
             <MobileSidebar
               path={path}
               user={user}
